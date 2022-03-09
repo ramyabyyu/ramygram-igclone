@@ -91,26 +91,32 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // validate email
-  const isEmailValid = Isemail.validate(email);
-
-  if (!isEmailValid) {
+  if (!email || !password) {
     res.status(400);
-    throw new Error("Please input a valid email");
+    throw new Error("All field is required!");
   }
 
-  // check user email
-  const user = await User.findOne({ email });
+  const oldUser = await User.findOne({ email });
 
-  if (email && (await bcrypt.compare(password, user.password))) {
-    res.status(200).json({
-      message: "Login success",
-      user,
-      token: generateToken(user._id),
-    });
-  } else {
+  // check email
+  if (!oldUser) {
     res.status(400);
-    throw new Error("Invalid credentials");
+    throw new Error("Email is incorrect!");
+  } else {
+    // if email match
+    // check password
+    const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+
+    if (isPasswordCorrect) {
+      res.status(200).json({
+        message: "login Success",
+        user: oldUser,
+        token: generateToken(oldUser._id),
+      });
+    } else {
+      res.status(400);
+      throw new Error("Password is incorrect!");
+    }
   }
 });
 
