@@ -3,12 +3,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
-const emailValidator = require("deep-email-validator");
-
-// email validator function
-const isEmailValid = async (email) => {
-  return emailValidator.validate(email);
-};
+const Isemail = require("isemail");
 
 // jwt generator
 const generateToken = (id) => {
@@ -21,7 +16,7 @@ const generateToken = (id) => {
     @access     Public
 */
 const register = asyncHandler(async (req, res) => {
-  const { name, username, email, password } = req.body;
+  const { name, username, email, password, c_password } = req.body;
 
   if (!name || !username || !email || !password) {
     res.status(400);
@@ -37,9 +32,9 @@ const register = asyncHandler(async (req, res) => {
   }
 
   // validate email
-  const { valid } = await isEmailValid(email);
+  const isEmailValid = Isemail.validate(email);
 
-  if (!valid) {
+  if (!isEmailValid) {
     res.status(400);
     throw new Error("Please input a valid email");
   }
@@ -58,12 +53,18 @@ const register = asyncHandler(async (req, res) => {
     throw new Error("Password must be at least 6 characters");
   }
 
+  // check password confirmation
+  if (password !== c_password) {
+    res.status(400);
+    throw new Error("Password confirmation does not match!");
+  }
+
   //   hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   //   create user
-  const user = User.create({
+  const user = await User.create({
     name,
     username,
     email,
@@ -90,10 +91,10 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  //   validate email
-  const { valid } = await isEmailValid(email);
+  // validate email
+  const isEmailValid = Isemail.validate(email);
 
-  if (!valid) {
+  if (!isEmailValid) {
     res.status(400);
     throw new Error("Please input a valid email");
   }
