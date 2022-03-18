@@ -4,10 +4,21 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
 const Isemail = require("isemail");
+const { validateUsername } = require("@digitalcube/username-validator");
 
 // jwt generator
 const generateToken = (id) => {
   return jwt.sign({ id }, jwtSecret, { expiresIn: "24h" });
+};
+
+// username validation
+const isUsernameValid = (username, res) => {
+  try {
+    validateUsername(username);
+  } catch (error) {
+    res.status(400);
+    throw new Error(`${error.name} : ${error.message}`);
+  }
 };
 
 /* 
@@ -22,6 +33,9 @@ const register = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("All field is required!");
   }
+
+  // check username valid
+  isUsernameValid(username, res);
 
   //   check username exist
   const isUsernameExist = await User.findOne({ username });

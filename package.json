@@ -5,11 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "serve": "nodemon backend/server.js"
+    "serve": "nodemon backend/server.js",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run serve\" \"npm run client\""
   },
   "author": "Ramy Abyyu",
   "license": "MIT",
   "dependencies": {
+    "@digitalcube/username-validator": "^1.0.2",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
     "dotenv": "^16.0.0",

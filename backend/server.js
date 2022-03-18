@@ -15,8 +15,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// routes
+// user routes
 app.use("/api", require("./routes/userRoute"));
+// follow routes
+app.use("/api", require("./routes/followRoutes"));
 
 // serve frontend
 

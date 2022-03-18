@@ -33,13 +33,22 @@ const userSchena = mongoose.Schema(
       type: String,
       default: null,
     },
-    followers: {
-      type: Array,
-      default: [],
-    },
-    followings: {
-      type: Array,
-      default: [],
+    followers: [
+      {
+        username: String,
+        picture: String,
+      },
+    ],
+    followings: [
+      {
+        username: String,
+        picture: String,
+      },
+    ],
+    privateAccount: {
+      type: Boolean,
+      default: false,
+      // if this set to true, then the user's post in their profile won't be visible
     },
   },
   { timestamps: true }
