@@ -7,13 +7,19 @@ const postSchema = mongoose.Schema(
       required: true,
       ref: "users",
     },
-    content: [String],
+    content: [
+      {
+        type: String,
+        required: [true, "Content is required to create new post!"],
+      },
+    ],
     caption: {
       type: String,
       default: null,
     },
     likes: [
       {
+        userId: String,
         username: String,
         picture: String,
       },

@@ -19,6 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api", require("./routes/userRoute"));
 // follow routes
 app.use("/api", require("./routes/followRoutes"));
+// post routes
+app.use("/api", require("./routes/postRoutes"));
 
 // serve frontend
 

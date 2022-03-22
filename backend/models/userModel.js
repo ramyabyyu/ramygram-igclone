@@ -35,12 +35,14 @@ const userSchena = mongoose.Schema(
     },
     followers: [
       {
+        userId: String,
         username: String,
         picture: String,
       },
     ],
     followings: [
       {
+        userId: String,
         username: String,
         picture: String,
       },

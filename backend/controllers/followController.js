@@ -23,12 +23,14 @@ const followUser = asyncHandler(async (req, res) => {
     } else {
       // if not follow, then targetUser get follower
       targetUser.followers.push({
+        userId: currentUser._id,
         username: currentUser.username,
         picture: currentUser.picture ? currentUser.picture : null,
       });
 
       // and currentUser get following
       currentUser.followings.push({
+        userId: targetUser._id,
         username: targetUser.username,
         picture: targetUser.picture ? targetUser.picture : null,
       });
