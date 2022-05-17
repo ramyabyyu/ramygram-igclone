@@ -16,7 +16,7 @@ const AuthInput = ({
     <Form.Group className="mb-3" controlId={controlId}>
       <Form.Label>
         {label}{" "}
-        {name === "password" || name === "c_password" ? (
+        {name === "password" ? (
           <span onClick={handleShowPassword}>
             {type === "password" ? <FaEye /> : <FaEyeSlash />}
           </span>
