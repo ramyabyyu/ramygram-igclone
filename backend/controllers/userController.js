@@ -87,7 +87,6 @@ const register = asyncHandler(async (req, res) => {
 
   if (user) {
     res.status(201).json({
-      message: "Register Success",
       user,
       token: generateToken(user._id),
     });
@@ -123,7 +122,6 @@ const login = asyncHandler(async (req, res) => {
 
     if (isPasswordCorrect) {
       res.status(200).json({
-        message: "login Success",
         user: oldUser,
         token: generateToken(oldUser._id),
       });

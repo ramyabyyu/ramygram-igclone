@@ -20,6 +20,7 @@ const AppNavbar = () => {
     dispatch(logout());
     dispatch(reset());
     navigate("/");
+    setShow(false);
   };
 
   return (
