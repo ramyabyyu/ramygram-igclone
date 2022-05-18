@@ -17,7 +17,7 @@ const AuthInput = ({
       <Form.Label>
         {label}{" "}
         {name === "password" ? (
-          <span onClick={handleShowPassword}>
+          <span onClick={handleShowPassword} className="pw-icon">
             {type === "password" ? <FaEye /> : <FaEyeSlash />}
           </span>
         ) : (

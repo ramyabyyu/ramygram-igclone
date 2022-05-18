@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { register, reset } from "../features/auth/authSlice";
+import { register, reset, login } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
 import { Form, Container, Row, Col, Button } from "react-bootstrap";
 import AuthInput from "../components/AuthInput";
+import Loader from "../components/Loader";
 
 const Auth = () => {
   const initialStateFormData = {
@@ -44,9 +45,50 @@ const Auth = () => {
     setIsRegister(!isRegister);
   };
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    let userData = {};
+
+    if (isRegister) {
+      if (password !== c_password) {
+        toast.error("Password confirmation does not match!");
+      } else {
+        userData = {
+          name,
+          email,
+          username,
+          password,
+          c_password,
+        };
+
+        dispatch(register(userData));
+      }
+    } else {
+      userData = {
+        email,
+        password,
+      };
+
+      dispatch(login(userData));
+    }
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <Container fluid>
@@ -89,6 +131,7 @@ const Auth = () => {
               controlId="email"
               placeholder="Enter your email"
               handleChange={handleChange}
+              autoFocus
             />
 
             {/* Password */}
@@ -124,7 +167,9 @@ const Auth = () => {
                 : "Don't have an account? Register here!"}
             </Button>
 
-            <Button variant="primary">{isRegister ? "Create" : "Login"}</Button>
+            <Button variant="primary" type="submit">
+              {isRegister ? "Create" : "Login"}
+            </Button>
           </Form>
         </Col>
       </Row>
