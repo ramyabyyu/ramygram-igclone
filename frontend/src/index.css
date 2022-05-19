@@ -32,3 +32,15 @@
     transform: rotate(360deg);
   }
 }
+
+/* Stories */
+.stories__container {
+  height: 3rem;
+  display: flex;
+  margin-bottom: 2rem;
+  overflow-x: scroll;
+}
+
+.profile__story {
+  margin-right: 1.5rem;
+}
