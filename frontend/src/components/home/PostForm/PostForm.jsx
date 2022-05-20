@@ -1,9 +1,29 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import PopUpButton from "../../PopUpButton";
 import UploadContentBtns from "../../UploadContentBtns";
 
 const PostForm = () => {
+  const initialPostData = {
+    content: [],
+    caption: "",
+    tags: "",
+  };
+
+  const [postData, setPostData] = useState(initialPostData);
+  const [contentUrls, setContentUrls] = useState([]);
+
+  const handleContentPreview = (e) => {
+    const selectedFiles = e.target.files;
+    const selectedFilesArray = Array.from(selectedFiles);
+
+    const imagesArray = selectedFilesArray.map((file) => {
+      return URL.createObjectURL(file);
+    });
+
+    setContentUrls((prevContents) => prevContents.concat(imagesArray));
+  };
+
   const hiddenPhotoInput = useRef(null);
   const handlePhotoInput = (e) => {
     hiddenPhotoInput.current.click();
@@ -21,30 +41,39 @@ const PostForm = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <div className="mb-3">
-        <PopUpButton
-          trigger="click"
-          placement="right"
-          title="Upload Options"
-          body={
-            <UploadContentBtns
-              handlePhotoInput={handlePhotoInput}
-              handleVideoInput={handleVideoInput}
-            />
-          }
-          btnVariant="outline-success"
-          btnName="Upload Contents"
-        />
+        {contentUrls.length > 10 ? (
+          <Button variant="outline-success" disabled>
+            Upload Contents
+          </Button>
+        ) : (
+          <PopUpButton
+            trigger="click"
+            placement="right"
+            title="Upload Options"
+            body={
+              <UploadContentBtns
+                handlePhotoInput={handlePhotoInput}
+                handleVideoInput={handleVideoInput}
+              />
+            }
+            btnVariant="outline-success"
+            btnName="Upload Contents"
+          />
+        )}
+
         <input
           type="file"
           ref={hiddenPhotoInput}
           accept="image/*"
           style={{ display: "none" }}
+          onChange={handleContentPreview}
         />
         <input
           type="file"
           ref={hiddenVideoInput}
           accept="video/*"
           style={{ display: "none" }}
+          onChange={handleContentPreview}
         />
       </div>
       <Form.Group className="mb-3" controlId="caption">
