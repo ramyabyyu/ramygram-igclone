@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Image } from "react-bootstrap";
 import PopUpButton from "../../PopUpButton";
 import UploadContentBtns from "../../UploadContentBtns";
+import { FaTimes } from "react-icons/fa";
 
 const PostForm = () => {
   const initialPostData = {
@@ -42,8 +43,8 @@ const PostForm = () => {
     <Form onSubmit={handleSubmit}>
       <div className="mb-3">
         {contentUrls.length > 10 ? (
-          <Button variant="outline-success" disabled>
-            Upload Contents
+          <Button variant="outline-secondary" disabled>
+            Max 10 Contents
           </Button>
         ) : (
           <PopUpButton
@@ -75,6 +76,24 @@ const PostForm = () => {
           style={{ display: "none" }}
           onChange={handleContentPreview}
         />
+
+        <div className="d-flex flex-col">
+          {contentUrls &&
+            contentUrls.map((content, i) => (
+              <div key={content} className="content__preview">
+                <Image src={content} width={171} height={180} alt="171x180" />
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() =>
+                    setContentUrls(contentUrls.filter((e) => e !== content))
+                  }
+                >
+                  <FaTimes />
+                </Button>
+              </div>
+            ))}
+        </div>
       </div>
       <Form.Group className="mb-3" controlId="caption">
         <Form.Label>Caption</Form.Label>
