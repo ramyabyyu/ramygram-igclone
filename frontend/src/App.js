@@ -12,6 +12,7 @@ import AppNavbar from "./components/AppNavbar";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import PostForm from "./pages/PostForm";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
           <Route path={Path.HOME} element={<Home />} />
           <Route path={Path.AUTH} element={<Auth />} />
           <Route path={Path.PROFILE} element={<Profile />} />
+          <Route path={Path.POSTFORM} element={<PostForm />} />
         </Routes>
       </Container>
       <ToastContainer />

@@ -1,11 +1,23 @@
-import React, { useRef, useState } from "react";
-import { Form, Button, Image } from "react-bootstrap";
-import PopUpButton from "../../PopUpButton";
-import UploadContentBtns from "../../UploadContentBtns";
+import React, { useEffect, useRef, useState } from "react";
+import { Form, Button, Image, Container, Row, Col } from "react-bootstrap";
+import PopUpButton from "../components/PopUpButton";
+import UploadContentBtns from "../components/UploadContentBtns";
 import { FaTimes } from "react-icons/fa";
-import ReactPlayer from "react-player";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import * as Path from "../routeNames";
 
 const PostForm = () => {
+  const { user } = useSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate(Path.AUTH);
+    }
+  }, [user, navigate]);
+
   const initialPostData = {
     content: [],
     caption: "",
@@ -15,25 +27,53 @@ const PostForm = () => {
   const [postData, setPostData] = useState(initialPostData);
   const [imageUrls, setImageUrls] = useState([]);
   const [videoUrls, setVideoUrls] = useState([]);
+  //   const [contentContainer, setContentContainer] = useState([]);
 
-  const handleContentPreview = (e) => {
+  const handleImagePreview = (e) => {
     const selectedFiles = e.target.files;
 
-    if (selectedFiles[0].type.substr(0, 4) === "image") {
-      mapContentsToState(selectedFiles, setImageUrls);
-    } else {
-      mapContentsToState(selectedFiles, setVideoUrls);
-    }
+    const contentUrls = mapContentsToState(selectedFiles);
+
+    setImageUrls((prevImages) => prevImages.concat(contentUrls));
   };
 
-  const mapContentsToState = (selectedFiles, setState) => {
+  const handleVideoPreview = (e) => {
+    const selectedFiles = e.target.files;
+
+    const contentUrls = mapContentsToState(selectedFiles);
+
+    setVideoUrls((prevImages) => prevImages.concat(contentUrls));
+  };
+
+  const handleDeleteVideo = (vid) => {
+    setVideoUrls(videoUrls.filter((v) => v !== vid));
+    setPostData({
+      ...postData,
+      content: postData.content.filter((v) => v !== vid),
+    });
+  };
+
+  const handleDeleteImage = (image) => {
+    setImageUrls(imageUrls.filter((img) => img !== image));
+    setPostData({
+      ...postData,
+      content: postData.content.filter((img) => img !== image),
+    });
+  };
+
+  const mapContentsToState = (selectedFiles) => {
     const selectedFilesArray = Array.from(selectedFiles);
 
     const contentsArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
     });
 
-    setState((prevContents) => prevContents.concat(contentsArray));
+    setPostData({
+      ...postData,
+      content: postData.content.concat(contentsArray),
+    });
+
+    return contentsArray;
   };
 
   const hiddenPhotoInput = useRef(null);
@@ -53,7 +93,7 @@ const PostForm = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <div className="mb-3">
-        {imageUrls.length > 10 ? (
+        {postData.content.length > 10 ? (
           <Button variant="outline-secondary" disabled>
             Max 10 Contents
           </Button>
@@ -78,33 +118,31 @@ const PostForm = () => {
           ref={hiddenPhotoInput}
           accept="image/*"
           style={{ display: "none" }}
-          onChange={handleContentPreview}
+          onChange={handleImagePreview}
         />
         <input
           type="file"
           ref={hiddenVideoInput}
           accept="video/*"
           style={{ display: "none" }}
-          onChange={handleContentPreview}
+          onChange={handleVideoPreview}
         />
 
-        <div className="d-flex flex-col">
+        <div className="d-flex flex-col mt-3">
           {imageUrls &&
             imageUrls.map((image) => (
-              <div key={image}>
+              <div key={image} className="me-3 mb-5 preview__container">
                 <Image
                   src={image}
-                  width={171}
-                  height={180}
+                  width={250}
+                  height={300}
                   alt="171x180"
                   className="image__preview"
                 />
                 <Button
                   variant="danger"
                   size="sm"
-                  onClick={() =>
-                    setImageUrls(imageUrls.filter((e) => e !== image))
-                  }
+                  onClick={() => handleDeleteImage(image)}
                 >
                   <FaTimes />
                 </Button>
@@ -112,10 +150,10 @@ const PostForm = () => {
             ))}
         </div>
 
-        <div className="d-flex flex-col">
+        <div className="d-flex flex-col mt-5">
           {videoUrls &&
             videoUrls.map((vid) => (
-              <div key={vid}>
+              <div key={vid} className="me-3 preview__container">
                 <video
                   src={vid}
                   width={250}
@@ -123,6 +161,13 @@ const PostForm = () => {
                   autoPlay
                   controls
                 ></video>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleDeleteVideo(vid)}
+                >
+                  <FaTimes />
+                </Button>
               </div>
             ))}
         </div>

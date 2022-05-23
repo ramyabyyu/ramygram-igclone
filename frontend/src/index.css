@@ -49,3 +49,10 @@
 .image__preview {
   object-fit: contain;
 }
+
+.preview__container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #222;
+  padding: 0.5rem;
+}
