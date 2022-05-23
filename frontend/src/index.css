@@ -44,3 +44,8 @@
 .profile__story {
   margin-right: 1.5rem;
 }
+
+/* content preview */
+.image__preview {
+  object-fit: contain;
+}

@@ -3,6 +3,7 @@ import { Form, Button, Image } from "react-bootstrap";
 import PopUpButton from "../../PopUpButton";
 import UploadContentBtns from "../../UploadContentBtns";
 import { FaTimes } from "react-icons/fa";
+import ReactPlayer from "react-player";
 
 const PostForm = () => {
   const initialPostData = {
@@ -12,17 +13,27 @@ const PostForm = () => {
   };
 
   const [postData, setPostData] = useState(initialPostData);
-  const [contentUrls, setContentUrls] = useState([]);
+  const [imageUrls, setImageUrls] = useState([]);
+  const [videoUrls, setVideoUrls] = useState([]);
 
   const handleContentPreview = (e) => {
     const selectedFiles = e.target.files;
+
+    if (selectedFiles[0].type.substr(0, 4) === "image") {
+      mapContentsToState(selectedFiles, setImageUrls);
+    } else {
+      mapContentsToState(selectedFiles, setVideoUrls);
+    }
+  };
+
+  const mapContentsToState = (selectedFiles, setState) => {
     const selectedFilesArray = Array.from(selectedFiles);
 
-    const imagesArray = selectedFilesArray.map((file) => {
+    const contentsArray = selectedFilesArray.map((file) => {
       return URL.createObjectURL(file);
     });
 
-    setContentUrls((prevContents) => prevContents.concat(imagesArray));
+    setState((prevContents) => prevContents.concat(contentsArray));
   };
 
   const hiddenPhotoInput = useRef(null);
@@ -42,7 +53,7 @@ const PostForm = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <div className="mb-3">
-        {contentUrls.length > 10 ? (
+        {imageUrls.length > 10 ? (
           <Button variant="outline-secondary" disabled>
             Max 10 Contents
           </Button>
@@ -78,19 +89,40 @@ const PostForm = () => {
         />
 
         <div className="d-flex flex-col">
-          {contentUrls &&
-            contentUrls.map((content, i) => (
-              <div key={content} className="content__preview">
-                <Image src={content} width={171} height={180} alt="171x180" />
+          {imageUrls &&
+            imageUrls.map((image) => (
+              <div key={image}>
+                <Image
+                  src={image}
+                  width={171}
+                  height={180}
+                  alt="171x180"
+                  className="image__preview"
+                />
                 <Button
                   variant="danger"
                   size="sm"
                   onClick={() =>
-                    setContentUrls(contentUrls.filter((e) => e !== content))
+                    setImageUrls(imageUrls.filter((e) => e !== image))
                   }
                 >
                   <FaTimes />
                 </Button>
+              </div>
+            ))}
+        </div>
+
+        <div className="d-flex flex-col">
+          {videoUrls &&
+            videoUrls.map((vid) => (
+              <div key={vid}>
+                <video
+                  src={vid}
+                  width={250}
+                  height={300}
+                  autoPlay
+                  controls
+                ></video>
               </div>
             ))}
         </div>
