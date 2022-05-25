@@ -9,3 +9,16 @@ const getFollowingPosts = async (token) => {
     },
   };
 };
+
+// Create New Post
+const createPost = async (postData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.post(API.GET_OR_CREATE_POST, postData, config);
+
+  return response.data;
+};
