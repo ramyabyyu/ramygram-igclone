@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, Button, Image, Container, Row, Col } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Image,
+  Container,
+  Row,
+  Col,
+  Card,
+} from "react-bootstrap";
 import PopUpButton from "../components/PopUpButton";
 import UploadContentBtns from "../components/UploadContentBtns";
-import { FaTimes } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Path from "../routeNames";
@@ -93,7 +101,7 @@ const PostForm = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <div className="mb-3">
-        {postData.content.length > 10 ? (
+        {postData.content.length === 10 ? (
           <Button variant="outline-secondary" disabled>
             Max 10 Contents
           </Button>
@@ -119,6 +127,7 @@ const PostForm = () => {
           accept="image/*"
           style={{ display: "none" }}
           onChange={handleImagePreview}
+          multiple
         />
         <input
           type="file"
@@ -126,51 +135,54 @@ const PostForm = () => {
           accept="video/*"
           style={{ display: "none" }}
           onChange={handleVideoPreview}
+          multiple
         />
 
-        <div className="d-flex flex-col mt-3">
-          {imageUrls &&
-            imageUrls.map((image) => (
-              <div key={image} className="me-3 mb-5 preview__container">
-                <Image
-                  src={image}
-                  width={250}
-                  height={300}
-                  alt="171x180"
-                  className="image__preview"
-                />
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDeleteImage(image)}
-                >
-                  <FaTimes />
-                </Button>
-              </div>
-            ))}
-        </div>
+        {imageUrls && (
+          <Container className="me-3 mb-5">
+            <Row>
+              {imageUrls.map((image) => (
+                <Col md={4} sm={2} className="my-3">
+                  <Card className="rounded shadow border-0">
+                    <Card.Img variant="top" src={image} />
+                    <Card.Body>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteImage(image)}
+                      >
+                        Delete <FaTrash />
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Container>
+        )}
 
-        <div className="d-flex flex-col mt-5">
-          {videoUrls &&
-            videoUrls.map((vid) => (
-              <div key={vid} className="me-3 preview__container">
-                <video
-                  src={vid}
-                  width={250}
-                  height={300}
-                  autoPlay
-                  controls
-                ></video>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => handleDeleteVideo(vid)}
-                >
-                  <FaTimes />
-                </Button>
-              </div>
-            ))}
-        </div>
+        {videoUrls && (
+          <Container className="me-3 mb-5">
+            <Row>
+              {videoUrls.map((vid) => (
+                <Col md={4} sm={2}>
+                  <Card className="rounded shadow border-0">
+                    <video src={vid} controls></video>
+                    <Card.Body>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteVideo(vid)}
+                      >
+                        Delete <FaTrash />
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Container>
+        )}
       </div>
       <Form.Group className="mb-3" controlId="caption">
         <Form.Label>Caption</Form.Label>
