@@ -11,20 +11,35 @@ import {
 import PopUpButton from "../components/PopUpButton";
 import UploadContentBtns from "../components/UploadContentBtns";
 import { FaTrash } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Path from "../routeNames";
+import { createPost } from "../features/post/postSlice";
+import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 const PostForm = () => {
   const { user } = useSelector((state) => state.auth);
+  const { isError, isLoading, isSuccess, message } = useSelector(
+    (state) => state.post
+  );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!user) {
       navigate(Path.AUTH);
     }
-  }, [user, navigate]);
+
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess) {
+      navigate("/");
+    }
+  }, [user, navigate, isSuccess, isError, message]);
 
   const initialPostData = {
     content: [],
@@ -35,7 +50,6 @@ const PostForm = () => {
   const [postData, setPostData] = useState(initialPostData);
   const [imageUrls, setImageUrls] = useState([]);
   const [videoUrls, setVideoUrls] = useState([]);
-  //   const [contentContainer, setContentContainer] = useState([]);
 
   const handleImagePreview = (e) => {
     const selectedFiles = e.target.files;
@@ -96,10 +110,18 @@ const PostForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    dispatch(createPost(postData));
+
+    setPostData(initialPostData);
   };
 
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} encType="multipart/form-data">
       <div className="mb-3">
         {postData.content.length === 10 ? (
           <Button variant="outline-secondary" disabled>
@@ -128,6 +150,7 @@ const PostForm = () => {
           style={{ display: "none" }}
           onChange={handleImagePreview}
           multiple
+          name="content"
         />
         <input
           type="file"
@@ -136,6 +159,7 @@ const PostForm = () => {
           style={{ display: "none" }}
           onChange={handleVideoPreview}
           multiple
+          name="content"
         />
 
         {imageUrls && (
@@ -191,11 +215,22 @@ const PostForm = () => {
           rows={3}
           spellCheck="false"
           style={{ resize: "none" }}
+          name="caption"
+          value={postData.caption}
+          onChange={(e) =>
+            setPostData({ ...postData, caption: e.target.value })
+          }
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="tags">
         <Form.Label>Tags</Form.Label>
-        <Form.Control type="text" spellCheck="false" />
+        <Form.Control
+          type="text"
+          spellCheck="false"
+          name="tags"
+          value={postData.tags}
+          onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
+        />
       </Form.Group>
 
       <div className="mb-3">

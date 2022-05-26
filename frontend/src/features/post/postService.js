@@ -8,6 +8,10 @@ const getFollowingPosts = async (token) => {
       Authorization: `Bearer ${token}`,
     },
   };
+
+  const response = await axios.get(API.GET_OR_CREATE_POST, config);
+
+  return response.data;
 };
 
 // Create New Post
@@ -22,3 +26,10 @@ const createPost = async (postData, token) => {
 
   return response.data;
 };
+
+const postService = {
+  createPost,
+  getFollowingPosts,
+};
+
+export default postService;

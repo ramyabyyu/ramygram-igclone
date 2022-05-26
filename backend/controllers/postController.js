@@ -48,10 +48,11 @@ const createPost = asyncHandler(async (req, res) => {
   content.forEach((c) => newPost.content.push(c));
 
   //   insert the tag of this post
-  if (tags.length > 0) {
-    tags.forEach((tag) => newPost.tags.push(tag));
-  } else {
-    newPost.tags.push(tags);
+  if (tags) {
+    const tagsLowerCase = tags.toLowerCase();
+    const splitTags = tagsLowerCase.split(",");
+
+    newPost.tags = splitTags;
   }
 
   //   insert the caption of this post
