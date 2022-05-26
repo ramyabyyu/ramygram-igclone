@@ -8,19 +8,24 @@ const asyncHandler = require("express-async-handler");
     @route      GET /api/post
     @access     Private
 */
-const getFollowingPosts = asyncHandler(async (req, res) => {
+const getPosts = asyncHandler(async (req, res) => {
   // get current user following's posts
   const userFollowingId = req.user.followings.userId;
   const followingPosts = await Post.find({ user: userFollowingId });
 
-  if (followingPosts.length > 0) {
+  // get current user's post
+  const currentUserPosts = await Post.find({ user: req.user._id });
+
+  if (followingPosts.length > 0 || currentUserPosts.length > 0) {
     res.status(200).json({
-      message: "Get following posts success",
+      message: "Get all posts success",
       followingPosts,
+      currentUserPosts,
     });
   } else {
     res.status(200).json({
-      message: "No post available, please follow another user",
+      message:
+        "No post available, please follow another user or create your own post",
     });
   }
 });
@@ -70,6 +75,6 @@ const createPost = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  getFollowingPosts,
+  getPosts,
   createPost,
 };

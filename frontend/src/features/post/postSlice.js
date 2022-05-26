@@ -24,17 +24,14 @@ export const createPost = createAsyncThunk(
 );
 
 // get user's following post
-export const getFollowingPosts = createAsyncThunk(
-  "post/getFollowing",
-  async (_, thunkAPI) => {
-    try {
-      const token = thunkAPI.getState().auth.user;
-      return await postService.getFollowingPosts(token);
-    } catch (error) {
-      errorMessage(error, thunkAPI);
-    }
+export const getPosts = createAsyncThunk("post/getAll", async (_, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user;
+    return await postService.getPosts(token);
+  } catch (error) {
+    errorMessage(error, thunkAPI);
   }
-);
+});
 
 export const postSlice = createSlice({
   name: "post",
@@ -59,15 +56,15 @@ export const postSlice = createSlice({
         state.message = action.payload;
       })
       // get following posts
-      .addCase(getFollowingPosts.pending, (state) => {
+      .addCase(getPosts.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getFollowingPosts.fulfilled, (state, action) => {
+      .addCase(getPosts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.posts = action.payload;
       })
-      .addCase(getFollowingPosts.rejected, (state, action) => {
+      .addCase(getPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
